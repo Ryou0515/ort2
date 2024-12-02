@@ -1,0 +1,53 @@
+<form method="get">
+  <h1>商品検索</h1>
+
+  <form method="get">
+      <!-- 検索キーワード入力 -->
+      {{ form.as_p }}
+  
+      <!-- カテゴリの選択 -->
+      <label for="category">カテゴリ:</label>
+      <select name="category">
+          <option value="">すべて</option>
+          <option value="books">本</option>
+          <option value="electronics">電子機器</option>
+      </select>
+  
+      <!-- 価格範囲の入力 -->
+      <label for="min_price">最低価格:</label>
+      <input type="number" name="min_price" min="0">
+      
+      <label for="max_price">最高価格:</label>
+      <input type="number" name="max_price" min="0">
+  
+      <button type="submit">検索</button>
+  </form>
+  
+  <h2>検索結果</h2>
+  <ul>
+      {% for product in page_obj %}
+          <li>{{ product.name }} - {{ product.price }}円</li>
+      {% empty %}
+          <li>該当する商品はありません。</li>
+      {% endfor %}
+  </ul>
+
+  <div class="text-end mb-3">
+    <a href="{% url 'product_create' %}" class="btn btn-primary">商品を追加</a>
+</div>
+  
+  <!-- ページネーション -->
+  <div class="pagination">
+      <span class="step-links">
+          {% if page_obj.has_previous %}
+              <a href="?page=1{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}">最初</a>
+              <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}">前へ</a>
+          {% endif %}
+          <span>ページ {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+          {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}">次へ</a>
+              <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}">最後</a>
+          {% endif %}
+      </span>
+  </div>
+  
