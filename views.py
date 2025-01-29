@@ -1,8 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.core.paginator import Paginator
 from .models import Product, Category
 from .forms import ProductForm, SearchForm
-from django.core.paginator import Paginator
-from django.http import Http404
 
 # 商品作成ビュー
 def product_create(request):
@@ -10,10 +9,10 @@ def product_create(request):
         form = ProductForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('product_list')  # 商品一覧ページにリダイレクト
+            return redirect('product_list')  # 商品一覧ページへリダイレクト
     else:
         form = ProductForm()
-
+    
     return render(request, 'search_app/product_form.html', {'form': form})
 
 # 商品編集ビュー
@@ -27,8 +26,37 @@ def product_update(request, pk):
             return redirect('product_detail', pk=product.pk)
     else:
         form = ProductForm(instance=product)
-
+    
     return render(request, 'search_app/product_form.html', {'form': form, 'product': product})
+
+# 商品詳細ビュー
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    return render(request, 'search_app/product_detail.html', {'product': product})
+
+# 商品削除ビュー
+def product_delete(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+
+    if request.method == 'POST':
+        product.delete()
+        return redirect('product_list')
+
+    return render(request, 'search_app/product_confirm_delete.html', {'product': product})
+
+# 商品一覧ビュー（ページネーション付き）
+def product_list(request):
+    products = Product.objects.all()
+
+    # ページネーション
+    paginator = Paginator(products, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'search_app/product_list.html', {
+        'page_obj': page_obj,
+        'categories': Category.objects.all(),  # サイドバーにカテゴリを表示する場合に使用
+    })
 
 # 商品検索ビュー
 def search_view(request):
@@ -77,33 +105,4 @@ def search_view(request):
         'sort_by': sort_by,
         'selected_category': selected_category,
         'categories': Category.objects.all(),
-    })
-
-# 商品詳細ビュー
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    return render(request, 'search_app/product_detail.html', {'product': product})
-
-# 商品削除ビュー
-def product_delete(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-
-    if request.method == 'POST':
-        product.delete()
-        return redirect('product_list')
-
-    return render(request, 'search_app/product_confirm_delete.html', {'product': product})
-
-# 商品一覧ビュー（ページネーション付き）
-def product_list(request):
-    products = Product.objects.all()
-
-    # ページネーション
-    paginator = Paginator(products, 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    return render(request, 'search_app/product_list.html', {
-        'page_obj': page_obj,
-        'categories': Category.objects.all(),  # サイドバーにカテゴリを表示する場合に使用
     })

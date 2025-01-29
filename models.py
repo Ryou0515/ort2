@@ -1,9 +1,18 @@
 from django.db import models
-from django.contrib.auth.models import User  # Djangoの標準ユーザーモデルを使用
+from django.contrib.auth.models import User
 
 # カテゴリモデル
 class Category(models.Model):
+    CATEGORY_CHOICES = [
+        ("all","すべて"),
+        ("books","本"),
+        ("electronics","電子機器"),
+     ]
+
+
+
     name = models.CharField(max_length=255)
+
 
     def __str__(self):
         return self.name

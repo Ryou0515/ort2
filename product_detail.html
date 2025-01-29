@@ -1,4 +1,4 @@
-{% load humanize %}
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -20,7 +20,7 @@
                     <div class="card-body">
                         <h2 class="card-title">{{ product.name }}</h2>
                         <p class="card-text">{{ product.description }}</p>
-                        <p class="card-text"><strong>{{ product.price|floatformat:0|intcomma }}円</strong></p>
+                        <p class="card-text"><strong>{{product.price}}円</strong></p>
 
                         <!-- ボタンの配置 -->
                         <div class="d-flex justify-content-between mt-4">
